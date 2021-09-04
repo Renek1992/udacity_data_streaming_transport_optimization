@@ -1,4 +1,4 @@
-# Defines functionality relating to train lines
+"""Defines functionality relating to train lines"""
 import collections
 from enum import IntEnum
 import logging
@@ -10,7 +10,8 @@ logger = logging.getLogger(__name__)
 
 
 class Line:
-    # Contains Chicago Transit Authority (CTA) Elevated Loop Train ("L") Station Data
+    """Contains Chicago Transit Authority (CTA) Elevated Loop Train ("L") Station Data"""
+
     colors = IntEnum("colors", "blue green red", start=0)
     num_directions = 2
 
@@ -23,7 +24,7 @@ class Line:
         self.trains = self._build_trains()
 
     def _build_line_data(self, station_df):
-        # Constructs all stations on the line
+        """Constructs all stations on the line"""
         stations = station_df["station_name"].unique()
 
         station_data = station_df[station_df["station_name"] == stations[0]]
@@ -45,7 +46,7 @@ class Line:
         return line
 
     def _build_trains(self):
-        # Constructs and assigns train objects to stations
+        """Constructs and assigns train objects to stations"""
         trains = []
         curr_loc = 0
         b_dir = True
@@ -65,20 +66,20 @@ class Line:
         return trains
 
     def run(self, timestamp, time_step):
-        # Advances trains between stations in the simulation. Runs turnstiles.
+        """Advances trains between stations in the simulation. Runs turnstiles."""
         self._advance_turnstiles(timestamp, time_step)
         self._advance_trains()
 
     def close(self):
-        # Called to stop the simulation
+        """Called to stop the simulation"""
         _ = [station.close() for station in self.stations]
 
     def _advance_turnstiles(self, timestamp, time_step):
-        # Advances the turnstiles in the simulation
+        """Advances the turnstiles in the simulation"""
         _ = [station.turnstile.run(timestamp, time_step) for station in self.stations]
 
     def _advance_trains(self):
-        # Advances trains between stations in the simulation
+        """Advances trains between stations in the simulation"""
         # Find the first b train
         curr_train, curr_index, b_direction = self._next_train()
         self.stations[curr_index].b_train = None

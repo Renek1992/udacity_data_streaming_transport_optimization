@@ -1,4 +1,4 @@
-# Defines a Tornado Server that consumes Kafka Event data for display
+"""Defines a Tornado Server that consumes Kafka Event data for display"""
 import logging
 import logging.config
 from pathlib import Path
@@ -21,17 +21,18 @@ logger = logging.getLogger(__name__)
 
 
 class MainHandler(tornado.web.RequestHandler):
-    # Defines a web request handler class
+    """Defines a web request handler class"""
+
     template_dir = tornado.template.Loader(f"{Path(__file__).parents[0]}/templates")
     template = template_dir.load("status.html")
 
     def initialize(self, weather, lines):
-        # Initializes the handler with required configuration
+        """Initializes the handler with required configuration"""
         self.weather = weather
         self.lines = lines
 
     def get(self):
-        # Responds to get requests
+        """Responds to get requests"""
         logging.debug("rendering and writing handler template")
         self.write(
             MainHandler.template.generate(weather=self.weather, lines=self.lines)
@@ -39,7 +40,7 @@ class MainHandler(tornado.web.RequestHandler):
 
 
 def run_server():
-    # Runs the Tornado Server and begins Kafka consumption
+    """Runs the Tornado Server and begins Kafka consumption"""
     if topic_check.topic_exists("TURNSTILE_SUMMARY") is False:
         logger.fatal(
             "Ensure that the KSQL Command has run successfully before running the web server!"

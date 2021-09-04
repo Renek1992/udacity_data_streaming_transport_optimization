@@ -1,4 +1,4 @@
-# Contains functionality related to Lines
+"""Contains functionality related to Lines"""
 import json
 import logging
 
@@ -9,15 +9,16 @@ logger = logging.getLogger(__name__)
 
 
 class Lines:
-    # Contains all train lines
+    """Contains all train lines"""
+
     def __init__(self):
-        # Creates the Lines object
+        """Creates the Lines object"""
         self.red_line = Line("red")
         self.green_line = Line("green")
         self.blue_line = Line("blue")
 
     def process_message(self, message):
-        # Processes a station message
+        """Processes a station message"""
         if "org.chicago.cta.station" in message.topic():
             value = message.value()
             if message.topic() == "org.chicago.cta.stations.table.v1":

@@ -16,7 +16,7 @@ class TurnstileHardware:
     seed_df = None
 
     def __init__(self, station):
-        # Create the Turnstile
+        """Create the Turnstile"""
         self.station = station
         TurnstileHardware._load_data()
         self.metrics_df = TurnstileHardware.seed_df[
@@ -44,7 +44,7 @@ class TurnstileHardware:
             )
 
     def get_entries(self, timestamp, time_step):
-        # Returns the number of turnstile entries for the given timeframe
+        """Returns the number of turnstile entries for the given timeframe"""
         hour_curve = TurnstileHardware.curve_df[
             TurnstileHardware.curve_df["hour"] == timestamp.hour
         ]

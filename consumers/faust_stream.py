@@ -1,5 +1,6 @@
-# Defines trends calculations for stations
+"""Defines trends calculations for stations"""
 import logging
+
 import faust
 
 
@@ -28,29 +29,48 @@ class TransformedStation(faust.Record):
     line: str
 
 
-app = faust.App("stations-stream", broker="kafka://localhost:9092", store="memory://")
-topic = app.topic("stations", value_type=Station)
+# TODO: Define a Faust Stream that ingests data from the Kafka Connect stations
+#       topic and places it into a new topic with only the necessary information
+
+app = faust.App("stations-stream",
+                broker="kafka://localhost:9092",
+                store="memory://",
+                )
+
+# TODO: Define the input Kafka Topic. Hint: What topic did Kafka Connect
+#       output to? Prefix + table_whitelist
+topic = app.topic("org.chicago.cta.stations", value_type=Station)
+
+# TODO: Define the output Kafka Topic
 out_topic = app.topic("org.chicago.cta.stations.table.v1", partitions=1)
+
+# TODO: Define a Faust Table
 table = app.Table(
-    "cta.stations.table",
-    default = TransformedStation,
-    partitions = 1,
-    changelog_topic = out_topic
+   "org.chicago.cta.stations.table.v1",
+   default=TransformedStation,
+   partitions=1,
+   changelog_topic=out_topic,
 )
 
+#
+# TODO: Using Faust, transform input `Station` records into `TransformedStation`
+#       records. Note that "line" is the color of the station. So if the
+#       `Station` record has the field `red` set to true, then you would set the
+#       `line` of the `TransformedStation` record to the string `"red"`
+#
 @app.agent(topic)
 async def process(stream):
     async for event in stream:
         line = None
         if event.red is True:
             line = "red"
-        if event.blue is True:
+        elif event.blue is True:
             line = "blue"
-        if event.green is True:
+        elif event.green is True:
             line = "green"
-        
+
         if line is None:
-            print("== alert no line!!!! ", event)
+            logger.warning(f"Could not find line color for {event}")
             continue
 
         table[event.station_id] = TransformedStation(

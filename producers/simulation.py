@@ -1,4 +1,5 @@
-"""Defines a time simulation responsible for executing any registered
+"""
+Defines a time simulation responsible for executing any registered
 producers
 """
 import datetime
